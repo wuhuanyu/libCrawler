@@ -4,6 +4,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from time import time
 from ..items import ReutersItem
+from scrapy import Request
 
 
 def check(arr):
@@ -44,12 +45,7 @@ class ReutersSpider(CrawlSpider):
         
         top_sty_url = top_sty.xpath('.//div[@class="photo"]/a/@href').extract_first()
 
-
-        
-
-        
-        
-
+        yield Request(self.base_url+top_sty_url,callback=self.parse_art,meta={'tag':tag})
 
     def parse_art(self,res):
         pass
