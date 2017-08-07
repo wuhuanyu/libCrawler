@@ -10,7 +10,16 @@ class BbcSpider(CrawlSpider):
     allowed_domains = ['bbc.com/news']
     start_urls = ['http://www.bbc.com/news/']
     url_tags = {
-        
+       'world': 'politics',
+       'world/asia': 'politics',
+       'world/africa': 'politics',
+       'world/aisa/china': 'politics',
+       'business': 'business',
+       'technology': 'tech',
+       'science': 'tech',
+       'entertainment_and_arts':'entertainment',
+       'health': 'health',
+       'special_reports': 'special',
     }
     
     
