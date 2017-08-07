@@ -69,6 +69,8 @@ class BbcSpider(CrawlSpider):
 
         b.add_value('url', page_url)
         b.add_value('crawled_at', self.crawled_at)
+        b.add_value('source', self.source)
+
         b.add_value('tag', tag)
         return b.load_item()
 

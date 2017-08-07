@@ -14,6 +14,7 @@ class NewsBaseItem(scrapy.Item):
     '''
      Base Cls for newsItem
     '''
+    source = scrapy.Field(output_processor=TakeFirst())
     title = scrapy.Field(
         input_processor=MapCompose(remove_tags),
         output_processor=TakeFirst(),
