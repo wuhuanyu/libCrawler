@@ -38,11 +38,6 @@ class NewsBaseItem(scrapy.Item):
 
 
 class BBCItem(NewsBaseItem):
-
-
-'''
-BBCItem
-'''
     tag = scrapy.Field(output_processor=TakeFirst())
 
 # define the fields for your item here like:
