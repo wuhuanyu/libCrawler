@@ -2,9 +2,11 @@
 import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
+from scrapy.loader import ItemLoader
 from time import time
 from ..items import ReutersItem
 from scrapy import Request
+from ..items import ReutersItem
 
 
 def check(arr):
@@ -34,14 +36,14 @@ class ReutersSpider(CrawlSpider):
         '/news/entertainment': 'entertainment',
         '/news/entertainment/arts': 'art',
         '/news/sports': 'sport',
-        '/news/science':'tech',
+        '/news/science': 'tech',
         '/commentary': 'commentary'
     }
 
     def start_requests(self):
 
         for url, tag in self.url_tags.iteritems():
-            if tag == 'china' or tag == 'commentary' or url == '/news/us' or tag == 'art' or url=='/news/science':
+            if tag == 'china' or tag == 'commentary' or url == '/news/us' or tag == 'art' or url == '/news/science':
                 yield scrapy.Request(self.base_url + url, callback=self.parse_zh_list, meta={'tag': tag})
             else:
                 yield scrapy.Request(self.base_url + url, callback=self.parse_list, meta={'tag': tag})
@@ -103,5 +105,33 @@ class ReutersSpider(CrawlSpider):
             yield Request(self.base_url + ul, callback=self.parse_art, meta={'tag': tag})
 
     def parse_art(self, res):
-        self.count += 1
-        print(self.count)
+        tag = res.meta['tag']
+        url = res.url
+        main = res.xpath('.//div[@class="ArticlePage_container_2aGp_"]')
+        if not check(main):
+            raise Exception('NO main body found')
+
+        rl = ItemLoader(item=ReutersItem(), selector=main)
+        rl.add_value('crawled_at', self.crawled_at)
+        rl.add_value('tag', tag)
+        rl.add_value('url', url)
+        rl.add_value('source', self.source)
+
+        rl.add_xpath(
+            'timestamp', './/div[re:test(@class,"ArticleHeader_date.*")]/text()')
+        image_url = main.xpath(
+            './/div[re:test(@class,"LazyImage_container.*")]/img/@src').extract_first()
+        if image_url is not None:
+            image_url += '&w=300'
+
+            rl.add_value('image_urls', [image_url, ])
+
+        rl.add_xpath(
+            'title', './/h1[re:test(@class,"ArticleHeader_headline.*")]/text()')
+
+        rl.add_xpath(
+            'text', './/div[re:test(@class,"ArticleBody_body.*")]/p/text()')
+
+        return rl.load_item()
+
+        # print(self.count)
