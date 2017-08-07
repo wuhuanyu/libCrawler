@@ -48,6 +48,8 @@ class BbcSpider(CrawlSpider):
     def parse_list(self, res):
         regex = res.meta['regex']
         tag = res.meta['tag']
+
+
         urls = res.xpath('.//a/@href').re(r'/news/)
 
         if urls is not None:
