@@ -33,6 +33,7 @@ class BbcSpider(CrawlSpider):
     }
 
     def start_requests(self):
+        # print(self.settings.attribute.keys())
         # regex = r'world|business|technology|health|science|special'
 
         for url, tag in self.url_tags.iteritems():
