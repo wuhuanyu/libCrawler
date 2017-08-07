@@ -30,10 +30,11 @@ class NewsBaseItem(scrapy.Item):
     crawled_at = scrapy.Field(
         output_processor=TakeFirst()
     )
-    # category = scrapy.Field(output_processor=TakeFirst())
-    # tag = scrapy.Field(output_processor=TakeFirst())
     image_urls = scrapy.Field()
     images = scrapy.Field()
+    url = scrapy.Field(
+        output_processor=TakeFirst()
+    )
     text = scrapy.Field(input_processor=MapCompose(remove_tags))
 
 

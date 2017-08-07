@@ -10,7 +10,7 @@ from ..items import BBCItem
 
 class BbcSpider(CrawlSpider):
     name = 'bbc'
-    allowed_domains = ['bbc.com/news']
+    allowed_domains = ['bbc.com']
     start_urls = ['http://www.bbc.com/news/']
 
     host = 'http://www.bbc.com'
@@ -33,24 +33,15 @@ class BbcSpider(CrawlSpider):
     }
 
     def start_requests(self):
-        regex = r'world|business|technology|health|science|special'
-        print(regex)
+        # regex = r'world|business|technology|health|science|special'
 
         for url, tag in self.url_tags.iteritems():
-            # if url.startswith('world'):
-            #     regx = 'world'
-            # if url == 'business' | url == 'technology':
-            #     regx = '(business|technology)'
-            # if url ==
-            # if technology = ''
-            yield scrapy.Request(self.base_url + url, callback=self.parse_list, meta={'regex': regex, 'tag': tag})
+            yield scrapy.Request(self.base_url + url, callback=self.parse_list, meta={'tag': tag})
 
     def parse_list(self, res):
-        regex = res.meta['regex']
         tag = res.meta['tag']
 
-
-        urls = res.xpath('.//a/@href').re(r'/news/)
+        urls = res.xpath('.//a/@href').re(r'/news/.*\d+$')
 
         if urls is not None:
             for url in urls:
@@ -58,7 +49,9 @@ class BbcSpider(CrawlSpider):
 
     def parse_art(self, res):
         page_url = res.url
-        story_sel = res.xpath('.//div[@class="storybody"]')
+
+        # print('pageurl',page_url)
+        story_sel = res.xpath('.//div[@class="story-body"]')
         tag = res.meta['tag']
         b = ItemLoader(item=BBCItem(), selector=story_sel)
 
