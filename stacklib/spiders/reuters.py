@@ -131,7 +131,8 @@ class ReutersSpider(CrawlSpider):
 
         rl.add_xpath(
             'text', './/div[re:test(@class,"ArticleBody_body.*")]/p/text()')
+        
+        print('this is git test')
 
         return rl.load_item()
 
-        # print(self.count)
