@@ -29,15 +29,49 @@ class CnnSpider(CrawlSpider):
         '/health': 'health',
     }
 
+
     def busi_list(self, res):
-        urls = res.xpath('.//a[re:test(@href,"^/\d{4}/\d{2}/\d{2}/.*$")]')
+        tag = res.meta['tag']
+        urls = res.xpath('.//a[re:test(@href,"^/\d{4}/\d{2}/\d{2}/.*$")]').extract()
+        if not len(urls)==0:
+            for url in urls:
+                yield Request(self.base_url+url,callback=self.parse_busi_art,meta={'tag':tag})
+            
+        urls_ = res.xpath('.//a[re:test(@href,"http://money.cnn.com/\d{4}/\d{2}/\d{2}/.*$")]').extract()
+        if not len(urls_)==0:
+            for url in urls_:
+                yield Request(self.base_url+url,callback=self.parse_busi_art,meta={'tag':tag})
+
+ 
+    def parse_busi_art(self,res):
+        pass
         
 
 
-        pass
 
     def ent_list(self, res):
+        tag = res.meta['tag']
+        urls = res.xpath('.//a[re:test(@href,"^/\d{4}/\d{2}/\d{2}/.*$")]').extract()
+        if not len(urls)==0:
+            for url in urls:
+                yield Request(self.base_url+url,callback=self.parse_ent_art,meta={'tag':tag})
+         
         pass
+    
+    def parse_ent_art(self,res):
+        url = res.url
+        tag = res.meta['tag']
+        art = res.xpath('.//div[@class="l-container"]//*[@class="pg-rail-tall__wrapper"]')
+        ci = ItemLoader(item=CNN(),selector=art)
+
+        ci.add_value('crawled_at',self.crawled_at)
+        ci.add_value('tag',tag)
+        ci.add_value('url',url)
+        ci.add_value('source',self.source)
+        ci.add_xpath()
+
+        return ci.load_item()
+
 
     def asia_list(self, res):
         pass
