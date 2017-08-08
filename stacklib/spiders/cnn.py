@@ -29,49 +29,65 @@ class CnnSpider(CrawlSpider):
         '/health': 'health',
     }
 
-
     def busi_list(self, res):
         tag = res.meta['tag']
-        urls = res.xpath('.//a[re:test(@href,"^/\d{4}/\d{2}/\d{2}/.*$")]').extract()
-        if not len(urls)==0:
+        urls = res.xpath(
+            './/a[re:test(@href,"^/\d{4}/\d{2}/\d{2}/.*$")]').extract()
+        if not len(urls) == 0:
             for url in urls:
-                yield Request(self.base_url+url,callback=self.parse_busi_art,meta={'tag':tag})
-            
-        urls_ = res.xpath('.//a[re:test(@href,"http://money.cnn.com/\d{4}/\d{2}/\d{2}/.*$")]').extract()
-        if not len(urls_)==0:
+                yield Request(self.base_url + url, callback=self.parse_busi_art, meta={'tag': tag})
+
+        urls_ = res.xpath(
+            './/a[re:test(@href,"http://money.cnn.com/\d{4}/\d{2}/\d{2}/.*$")]').extract()
+        if not len(urls_) == 0:
             for url in urls_:
-                yield Request(self.base_url+url,callback=self.parse_busi_art,meta={'tag':tag})
+                yield Request(self.base_url + url, callback=self.parse_busi_art, meta={'tag': tag})
 
- 
-    def parse_busi_art(self,res):
+    def parse_busi_art(self, res):
         pass
-        
-
-
 
     def ent_list(self, res):
         tag = res.meta['tag']
-        urls = res.xpath('.//a[re:test(@href,"^/\d{4}/\d{2}/\d{2}/.*$")]').extract()
-        if not len(urls)==0:
+        urls = res.xpath(
+            './/a[re:test(@href,"^/\d{4}/\d{2}/\d{2}/.*$")]').extract()
+        if not len(urls) == 0:
             for url in urls:
-                yield Request(self.base_url+url,callback=self.parse_ent_art,meta={'tag':tag})
-         
+                yield Request(self.base_url + url, callback=self.parse_ent_art, meta={'tag': tag})
+
         pass
-    
-    def parse_ent_art(self,res):
+
+    def parse_ent_art(self, res):
+
+        # http://edition.cnn.com/2017/08/08/entertainment/taylor-swift-lawsuit-court-rules/index.html
         url = res.url
         tag = res.meta['tag']
-        art = res.xpath('.//div[@class="l-container"]//*[@class="pg-rail-tall__wrapper"]')
-        ci = ItemLoader(item=CNN(),selector=art)
+        art = res.xpath(
+            './/div[@class="l-container"]//*[@class="pg-rail-tall__wrapper"]')
+        ci = ItemLoader(item=CNN(), selector=art)
 
-        ci.add_value('crawled_at',self.crawled_at)
-        ci.add_value('tag',tag)
-        ci.add_value('url',url)
-        ci.add_value('source',self.source)
-        ci.add_xpath()
+        ci.add_value('crawled_at', self.crawled_at)
+        ci.add_value('tag', tag)
+        ci.add_value('url', url)
+        ci.add_value('source', self.source)
+
+        ci.add_xpath('title', './/div[@class="pg-headline"]/text()')
+        ci.add_xpath(
+            'timestamp', './/div[@class="metadata"]//p[@class="update-time"]/text()')
+
+        # ci.add_xpath('text','.//div[@class="pg-rail-tall__body"]//div[@class="el__leafmedia el__leafmedia--sourced-paragraph"]|div[@class="el__leafmedia el__leafmedia--sourced-paragraph"]|div[@class=""]')
+        ci.add_css('text', '.zn-body__paragraph::text')
+
+        image_ = res.xpath(
+            './/div[@class="media__video--thumbnail"]//img/@data-src-medium').extract()
+
+        if image_ is not None and (not len(image_) == 0):
+            if not image_.startswith('http'):
+                image_ ='http:'+image_
+            
+            ci.add_value('image_urls',[image_])
+        
 
         return ci.load_item()
-
 
     def asia_list(self, res):
         pass
@@ -115,5 +131,5 @@ class CnnSpider(CrawlSpider):
                 callback = self.travel_list
             if url == '/health':
                 callback = self.health_list
-            
-            yield Request(url=self.base_url+url,callback=callback,meta={'tag':tag})
+
+            yield Request(url=self.base_url + url, callback=callback, meta={'tag': tag})
