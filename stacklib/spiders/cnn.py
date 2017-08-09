@@ -7,7 +7,7 @@ from time import time
 from scrapy.loader import ItemLoader
 from scrapy import Request
 
-
+# image not accurate
 def checkUrl(urls):
     if urls is None:
         return urls
@@ -31,7 +31,7 @@ class CnnSpider(CrawlSpider):
         '/asia': 'world',
         '/china': 'china',
         '/us': 'world',
-        '/techonology': 'tech',
+        '/technology': 'tech',
         '/sport': 'sport',
         '/travel': 'travel',
         '/health': 'health',
@@ -88,7 +88,7 @@ class CnnSpider(CrawlSpider):
 
     def parse_ent_art(self, res):
         '''
-        entertainment,china,asia,sport
+        entertainment,china,asia,sport,health
         '''
 
         # http://edition.cnn.com/2017/08/08/entertainment/taylor-swift-lawsuit-court-rules/index.html
@@ -138,7 +138,12 @@ class CnnSpider(CrawlSpider):
         pass
 
     def tech_list(self, res):
-        pass
+        tag = res.meta['tag']
+        urls = res.xpath(
+            './/a[re:test(@href,"^//money.cnn.com/\d{4}/\d{2}/\d{2}/technology/.*$")]/@href').extract()
+        if not (len(urls) == 0):
+            for url in urls:
+                yield Request("http:" + url, callback=self.parse_busi_art, meta={'tag': tag})
 
     def sport_list(self, res):
         tag = res.meta['tag']
@@ -187,7 +192,13 @@ class CnnSpider(CrawlSpider):
 
 
     def health_list(self, res):
-        pass
+        tag = res.meta['tag']
+        urls = res.xpath(
+            './/a[re:test(@href,"^/\d{4}/\d{2}/\d{2}/health/.*$")]/@href').extract()
+        # print(urls)
+        if not (len(urls) == 0):
+            for url in urls:
+                yield Request(self.base_url + url, callback=self.parse_ent_art, meta={'tag': tag})
 
     def start_requests(self):
         callback = None
@@ -208,15 +219,17 @@ class CnnSpider(CrawlSpider):
             #     callback = self.asia_list
             # if url == '/us':
             #     callback = self.us_list
-            # if url == '/technology':
-            #     base_ = base_money
-            #     callback = self.tech_list
+            if url == '/technology':
+                base_ = base_money
+                callback = self.tech_list
+
+                yield Request('http://money.cnn.com'+url, callback=callback, meta={'tag': tag})
             # if url == '/sport':
                 # callback = self.sport_list
 
             # if url == '/travel': #done todo without image
             #     callback = self.travel_list
-            # if url == '/health':
+            # if url == '/health': #done
             #     callback = self.health_list
 
-            yield Request(base_ + url, callback=callback, meta={'tag': tag})
+            # yield Request(base_ + url, callback=callback, meta={'tag': tag})
