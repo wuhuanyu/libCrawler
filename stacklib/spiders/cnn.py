@@ -148,10 +148,43 @@ class CnnSpider(CrawlSpider):
             for url in urls:
                 yield Request(self.base_url + url, callback=self.parse_ent_art, meta={'tag': tag})
 
-
-
     def travel_list(self, res):
-        pass
+        urls = res.xpath(
+            './/a[re:test(@href,"^/travel/article/.*$")]/@href'
+        
+        ).extract()
+
+        for url in urls:
+            yield Request(url=self.base_url + url, callback=self.parse_travel_art, meta={'tag': res.meta['tag']})
+
+        # todo another url pattern
+
+    def parse_travel_art(self, res):
+        # http://edition.cnn.com/travel/article/singlethread-restaurant-sonoma-county-california/index.html
+
+        url =res.url
+        tag = res.meta['tag']
+
+        art = res.xpath('.//div[@class="Article__wrapper"]')
+
+        ci= ItemLoader(CNN(),selector=art)
+        ci.add_value('url',url)
+        ci.add_value('crawled_at',self.crawled_at)
+        ci.add_value('tag',tag)
+        ci.add_value('source',self.source)
+
+        ci.add_xpath('title','.//h1[@class="Article__title"]/text()')
+
+        ci.add_xpath('timestamp','.//div[@class="Article__subtitle"]/text()')
+
+        ci.add_xpath('image_urls','.//img/@src')
+        ci.add_css('text','.Paragraph__component')
+
+        return ci.load_item()
+
+
+
+
 
     def health_list(self, res):
         pass
@@ -162,7 +195,6 @@ class CnnSpider(CrawlSpider):
         base_money = 'http://money.cnn.com'
 
         for url, tag in self.url_tags.iteritems():
-
 
             # if url == '/china': #done
             #     callback = self.china_list
@@ -179,10 +211,10 @@ class CnnSpider(CrawlSpider):
             # if url == '/technology':
             #     base_ = base_money
             #     callback = self.tech_list
-            if url == '/sport':
-                callback = self.sport_list
+            # if url == '/sport':
+                # callback = self.sport_list
 
-            # if url == '/travel':
+            # if url == '/travel': #done todo without image
             #     callback = self.travel_list
             # if url == '/health':
             #     callback = self.health_list
