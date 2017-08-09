@@ -44,3 +44,6 @@ class BBCItem(NewsBaseItem):
 
 # define the fields for your item here like:
 # name = scrapy.Field()
+
+class ReutersItem(NewsBaseItem):
+    tag = scrapy.Field(output_processor=TakeFirst())
