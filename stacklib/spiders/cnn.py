@@ -87,6 +87,9 @@ class CnnSpider(CrawlSpider):
                 yield Request(self.base_url + url, callback=self.parse_ent_art, meta={'tag': tag})
 
     def parse_ent_art(self, res):
+        '''
+        entertainment,china,asia,sport
+        '''
 
         # http://edition.cnn.com/2017/08/08/entertainment/taylor-swift-lawsuit-court-rules/index.html
         url = res.url
@@ -100,22 +103,36 @@ class CnnSpider(CrawlSpider):
         ci.add_value('url', url)
         ci.add_value('source', self.source)
 
+        summary = ' '.join(art.xpath(
+            './/div[@class="el__storyhighlights_wrapper"]//ul/li/text()').extract())
+        ci.add_value('summary', summary)
+
         ci.add_xpath('title', './/h1[@class="pg-headline"]/text()')
         ci.add_xpath(
             'timestamp', './/div[@class="metadata"]//p[@class="update-time"]/text()')
 
         # ci.add_xpath('text','.//div[@class="pg-rail-tall__body"]//div[@class="el__leafmedia el__leafmedia--sourced-paragraph"]|div[@class="el__leafmedia el__leafmedia--sourced-paragraph"]|div[@class=""]')
-        ci.add_css('text', '.zn-body__paragraph::text')
+        ci.add_css('text', '.zn-body__paragraph')
 
         ci.add_xpath('image_urls',   './/img/@data-src-medium')
 
         return ci.load_item()
 
     def asia_list(self, res):
-        pass
+        tag = res.meta['tag']
+        urls = res.xpath(
+            './/a[re:test(@href,"^/\d{4}/\d{2}/\d{2}/.*$")]/@href').extract()
+        if not (len(urls) == 0):
+            for url in urls:
+                yield Request(self.base_url + url, callback=self.parse_ent_art, meta={'tag': tag})
 
     def china_list(self, res):
-        pass
+        tag = res.meta['tag']
+        urls = res.xpath(
+            './/a[re:test(@href,"^/\d{4}/\d{2}/\d{2}/.*$")]/@href').extract()
+        if not (len(urls) == 0):
+            for url in urls:
+                yield Request(self.base_url + url, callback=self.parse_ent_art, meta={'tag': tag})
 
     def us_list(self, res):
         pass
@@ -124,7 +141,14 @@ class CnnSpider(CrawlSpider):
         pass
 
     def sport_list(self, res):
-        pass
+        tag = res.meta['tag']
+        urls = res.xpath(
+            './/a[re:test(@href,"^/\d{4}/\d{2}/\d{2}/.*$")]/@href').extract()
+        if not (len(urls) == 0):
+            for url in urls:
+                yield Request(self.base_url + url, callback=self.parse_ent_art, meta={'tag': tag})
+
+
 
     def travel_list(self, res):
         pass
@@ -138,26 +162,29 @@ class CnnSpider(CrawlSpider):
         base_money = 'http://money.cnn.com'
 
         for url, tag in self.url_tags.iteritems():
-            if url == '/INTERNATIONAL':
-                base_ = base_money
-                callback = self.busi_list
-            if url == '/entertainment':
-                callback = self.ent_list
-            if url == '/aisa':
-                callback = self.asia_list
-            if url == '/china':
-                callback = self.china_list
-            if url == '/us':
-                callback = self.us_list
-            if url == '/technology':
-                base_ = base_money
-                callback = self.tech_list
+
+
+            # if url == '/china': #done
+            #     callback = self.china_list
+
+            # if url == '/INTERNATIONAL': #done
+            #     base_ = base_money
+            #     callback = self.busi_list
+            # if url == '/entertainment': #done
+            #     callback = self.ent_list
+            # if url == '/asia':    #done
+            #     callback = self.asia_list
+            # if url == '/us':
+            #     callback = self.us_list
+            # if url == '/technology':
+            #     base_ = base_money
+            #     callback = self.tech_list
             if url == '/sport':
                 callback = self.sport_list
 
-            if url == '/travel':
-                callback = self.travel_list
-            if url == '/health':
-                callback = self.health_list
+            # if url == '/travel':
+            #     callback = self.travel_list
+            # if url == '/health':
+            #     callback = self.health_list
 
             yield Request(base_ + url, callback=callback, meta={'tag': tag})
