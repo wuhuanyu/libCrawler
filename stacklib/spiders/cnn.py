@@ -8,6 +8,8 @@ from scrapy.loader import ItemLoader
 from scrapy import Request
 
 # image not accurate
+
+
 def checkUrl(urls):
     if urls is None:
         return urls
@@ -88,7 +90,7 @@ class CnnSpider(CrawlSpider):
 
     def parse_ent_art(self, res):
         '''
-        entertainment,china,asia,sport,health
+        entertainment,china,asia,sport,health,us
         '''
 
         # http://edition.cnn.com/2017/08/08/entertainment/taylor-swift-lawsuit-court-rules/index.html
@@ -135,7 +137,12 @@ class CnnSpider(CrawlSpider):
                 yield Request(self.base_url + url, callback=self.parse_ent_art, meta={'tag': tag})
 
     def us_list(self, res):
-        pass
+        tag = res.meta['tag']
+        urls = res.xpath(
+            './/a[re:test(@href,"^/\d{4}/\d{2}/\d{2}/.*$")]/@href').extract()
+        if not (len(urls) == 0):
+            for url in urls:
+                yield Request(self.base_url + url, callback=self.parse_ent_art, meta={'tag': tag})
 
     def tech_list(self, res):
         tag = res.meta['tag']
@@ -156,40 +163,35 @@ class CnnSpider(CrawlSpider):
     def travel_list(self, res):
         urls = res.xpath(
             './/a[re:test(@href,"^/travel/article/.*$")]/@href'
-        
+
         ).extract()
 
         for url in urls:
             yield Request(url=self.base_url + url, callback=self.parse_travel_art, meta={'tag': res.meta['tag']})
 
-        # todo another url pattern
 
     def parse_travel_art(self, res):
         # http://edition.cnn.com/travel/article/singlethread-restaurant-sonoma-county-california/index.html
 
-        url =res.url
+        url = res.url
         tag = res.meta['tag']
 
         art = res.xpath('.//div[@class="Article__wrapper"]')
 
-        ci= ItemLoader(CNN(),selector=art)
-        ci.add_value('url',url)
-        ci.add_value('crawled_at',self.crawled_at)
-        ci.add_value('tag',tag)
-        ci.add_value('source',self.source)
+        ci = ItemLoader(CNN(), selector=art)
+        ci.add_value('url', url)
+        ci.add_value('crawled_at', self.crawled_at)
+        ci.add_value('tag', tag)
+        ci.add_value('source', self.source)
 
-        ci.add_xpath('title','.//h1[@class="Article__title"]/text()')
+        ci.add_xpath('title', './/h1[@class="Article__title"]/text()')
 
-        ci.add_xpath('timestamp','.//div[@class="Article__subtitle"]/text()')
+        ci.add_xpath('timestamp', './/div[@class="Article__subtitle"]/text()')
 
-        ci.add_xpath('image_urls','.//img/@src')
-        ci.add_css('text','.Paragraph__component')
+        ci.add_xpath('image_urls', './/img/@src')
+        ci.add_css('text', '.Paragraph__component')
 
         return ci.load_item()
-
-
-
-
 
     def health_list(self, res):
         tag = res.meta['tag']
@@ -201,35 +203,36 @@ class CnnSpider(CrawlSpider):
                 yield Request(self.base_url + url, callback=self.parse_ent_art, meta={'tag': tag})
 
     def start_requests(self):
-        callback = None
         base_ = self.base_url
-        base_money = 'http://money.cnn.com'
+        base_money = self.start_urls[1]
 
         for url, tag in self.url_tags.iteritems():
 
-            # if url == '/china': #done
-            #     callback = self.china_list
+            if url == '/china':  # done
+                yield Request(base_ + url, callback=self.china_list, meta={'tag': tag})
 
-            # if url == '/INTERNATIONAL': #done
-            #     base_ = base_money
-            #     callback = self.busi_list
-            # if url == '/entertainment': #done
-            #     callback = self.ent_list
-            # if url == '/asia':    #done
-            #     callback = self.asia_list
-            # if url == '/us':
-            #     callback = self.us_list
+            if url == '/INTERNATIONAL':  # done
+                yield Request(base_money + url, callback=self.busi_list, meta={'tag': tag})
+
+            if url == '/entertainment':  # done
+
+                yield Request(base_ + url, callback=self.ent_list, meta={'tag': tag})
+            if url == '/asia':  # done
+                yield Request(base_ + url, callback=self.asia_list, meta={'tag': tag})
+
+            if url == '/us':
+                yield Request(base_ + url, callback=self.us_list, meta={'tag': tag})
+
             if url == '/technology':
-                base_ = base_money
-                callback = self.tech_list
+                yield Request(base_money + url, callback=self.tech_list, meta={'tag': tag})
 
-                yield Request('http://money.cnn.com'+url, callback=callback, meta={'tag': tag})
-            # if url == '/sport':
-                # callback = self.sport_list
+            if url == '/sport':
+                yield Request(base_ + url, callback=self.sport_list, meta={'tag': tag})
 
-            # if url == '/travel': #done todo without image
-            #     callback = self.travel_list
-            # if url == '/health': #done
-            #     callback = self.health_list
+            if url == '/travel':  # done todo without image
 
-            # yield Request(base_ + url, callback=callback, meta={'tag': tag})
+                yield Request(base_ + url, callback=self.travel_list, meta={'tag': tag})
+
+            if url == '/health':  # done
+
+                yield Request(base_ + url, callback=self.health_list, meta={'tag': tag})
