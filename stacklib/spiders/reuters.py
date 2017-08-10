@@ -4,9 +4,9 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.loader import ItemLoader
 from time import time
-from ..items import ReutersItem
 from scrapy import Request
-from ..items import ReutersItem
+
+from stacklib.item.NewsItem import ReutersItem
 
 
 def check(arr):
@@ -131,7 +131,5 @@ class ReutersSpider(CrawlSpider):
 
         rl.add_xpath(
             'text', './/div[re:test(@class,"ArticleBody_body.*")]/p/text()')
-        
 
         return rl.load_item()
-

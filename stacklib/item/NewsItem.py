@@ -47,3 +47,6 @@ class BBCItem(NewsBaseItem):
 
 class ReutersItem(NewsBaseItem):
     tag = scrapy.Field(output_processor=TakeFirst())
+
+class CNNItem(NewsBaseItem):
+    tag = scrapy.Field(output_processor=TakeFirst())
