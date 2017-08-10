@@ -13,6 +13,8 @@ class BookItem(BaseItem):
     author = scrapy.Field(input_processor = MapCompose(remove_tags))
     summary = scrapy.Field(input_processor=MapCompose(remove_tags))
 
+
+
     
 
 
