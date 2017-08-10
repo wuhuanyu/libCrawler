@@ -6,3 +6,4 @@ class BlogItem(News):
 
 class Medium(BlogItem):
     pass
+
