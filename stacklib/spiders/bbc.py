@@ -5,7 +5,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from time import time
 from scrapy.loader import ItemLoader
 
-from ..items import BBCItem
+from stacklib.item.NewsItem import BBCItem
 
 
 class BbcSpider(CrawlSpider):

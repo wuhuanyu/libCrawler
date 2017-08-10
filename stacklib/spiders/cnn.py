@@ -2,7 +2,7 @@
 import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-from stacklib.item import CNNItem as CNN
+from stacklib.item.NewsItem import CNNItem as CNN
 from time import time
 from scrapy.loader import ItemLoader
 from scrapy import Request
