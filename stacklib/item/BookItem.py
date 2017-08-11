@@ -8,10 +8,16 @@ from NewsItem import BaseItem
 class BookItem(BaseItem):
     source = scrapy.Field(output_processor=TakeFirst())
 
-    related_url = scrapy.Field()
+    title = scrapy.Field(input_processor=MapCompose(remove_tags),output_processor=TakeFirst())
+
+
+    review_urls = scrapy.Field()
 
     author = scrapy.Field(input_processor = MapCompose(remove_tags))
+
     summary = scrapy.Field(input_processor=MapCompose(remove_tags))
+
+
 
 
 
