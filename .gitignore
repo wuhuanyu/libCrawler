@@ -2,3 +2,5 @@
 .vscode/launch.json
 stacklib/__init__.pyc
 **/*.pyc
+.vscode/launch.json
+.vscode/launch.json

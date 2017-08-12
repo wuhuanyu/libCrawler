@@ -47,7 +47,8 @@ class MillionBookSpider(CrawlSpider):
 
         bi.add_xpath('summary', './/div[@class="article"]//p/text()')
         bi.add_xpath('image_urls', './/div[@id="br-book-detail"]//img/@src')
-        bi.add_xpath('title', './/div[@id="br-details"]/h1/a/text()')
+        title = main.xpath('.//div[@id="br-details"]/h1/a/text()').extract()
+        bi.add_value('title', title)
         bi.add_xpath('author', './/div[@class="br-details"]//h4/text()')
 
         img_ = main.xpath('.//div[@class="article"]/h2/a/@href').extract()
@@ -57,14 +58,14 @@ class MillionBookSpider(CrawlSpider):
         bi.add_value('review_urls', related_urls)
 
         for url in related_urls:
-            yield Re(url, callback=self.parse_book_reivew)
+            yield Re(url, callback=self.parse_book_reivew, meta={'book': title})
 
-        # bi.add_xpath('review_urls', './/div[@class="article"]/h1/a/@href')
         yield bi.load_item()
 
 
 # http://www.themillions.com/2013/01/the-testament-of-mary-by-colm-toibin.html
     def parse_book_reivew(self, res):
+        book = res.meta['book']
         crawled_at = int(round(time()) * 1000)
         source = 'mbookrev'
 
@@ -80,6 +81,9 @@ class MillionBookSpider(CrawlSpider):
         bi.add_css('title', 'h2+h3::text')
         bi.add_css('text', '.article-content>p::text')
 
+        bi.add_value('book', book)
+        bi.add_value('url',res.url)
+
         comments = []
 
         com_sel = res.css('.commentlist')
@@ -88,14 +92,12 @@ class MillionBookSpider(CrawlSpider):
 
         for c in commentli:
             comment = CO()
-            comment['author'] = c.xpath('.//span[@class="author"]/text()').extract_first()
-            # author= c.xpath('.//span[@class="author"]').extract_first()
+            comment['author'] = c.xpath(
+                './/span[@class="author"]/text()').extract_first()
 
             comment['text'] = c.css('.commenttext>p::text').extract()
             comments.append(comment)
 
         bi.add_value('comments', comments)
 
-        return  bi.load_item()
-
-        # commentText = com_sel.xpath('.//li[re:test(@id,"^comment-\d*$")]//div[@class="commenttext"]/p/text()').extract()
+        return bi.load_item()

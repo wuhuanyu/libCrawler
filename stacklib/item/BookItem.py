@@ -19,10 +19,14 @@ class Book(BaseItem):
 
 
 class BookReivew(BaseItem):
+    book = scrapy.Field(input_processor=MapCompose(
+        remove_tags), output_processor=TakeFirst())
+
     title = scrapy.Field(input_processor=MapCompose(
         remove_tags), output_processor=TakeFirst())
     text = scrapy.Field(input_processor=MapCompose(remove_tags))
     comments = scrapy.Field()
+    url = scrapy.Field(output_processor=TakeFirst())
 
 
 class Comment(scrapy.Item):

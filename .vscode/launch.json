@@ -6,7 +6,7 @@
             "type": "python",
             "request": "launch",
             "pythonPath": "${config:python.pythonPath}",
-            "program": "/home/stack/Documents/python/bin/scrapy",
+            "program": "/home/stack/Documents/code/python/bin/scrapy",
             "cwd":"${workspaceRoot}",
             "args": [
                 "crawl",
