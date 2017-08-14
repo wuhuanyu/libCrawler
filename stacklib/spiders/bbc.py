@@ -52,11 +52,11 @@ class BbcSpider(CrawlSpider):
         page_url = res.url
 
         # print('pageurl',page_url)
-        story_sel = res.xpath('.//div[@class="story-body"]')
+        story_sel = res.xpath('.//div[@class="story-body"]')[0]
         tag = res.meta['tag']
         b = ItemLoader(item=BBCItem(), selector=story_sel)
 
-        b.add_xpath('title', './/h1[@class="storybody__h1"]/text()')
+        b.add_xpath('title', './/h1[@class="story-body__h1"]/text()')
         b.add_xpath(
             'timestamp', './/li[@class="mini-info-list__item"]/div[@data-seconds]/@data-seconds')
 
