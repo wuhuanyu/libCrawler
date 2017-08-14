@@ -2,7 +2,7 @@ import scrapy
 
 from w3lib.html import remove_tags
 from scrapy.loader.processors import Join, MapCompose, TakeFirst
-from NewsItem import BaseItem
+from stacklib.item import BaseItem
 
 
 class Book(BaseItem):
