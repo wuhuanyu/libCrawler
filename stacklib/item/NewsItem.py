@@ -10,11 +10,23 @@ from w3lib.html import remove_tags
 from scrapy.loader.processors import Join, MapCompose, TakeFirst
 
 
-class NewsBaseItem(scrapy.Item):
+class BaseItem(scrapy.Item):
+    source = scrapy.Field(output_processor=TakeFirst())
+    crawled_at = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    image_urls = scrapy.Field()
+    images = scrapy.Field()
+    url = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+
+
+class NewsBaseItem(BaseItem):
     '''
      Base Cls for newsItem
     '''
-    source = scrapy.Field(output_processor=TakeFirst())
+
     title = scrapy.Field(
         input_processor=MapCompose(remove_tags),
         output_processor=TakeFirst(),
@@ -28,14 +40,6 @@ class NewsBaseItem(scrapy.Item):
         output_processor=TakeFirst(),
     )
 
-    crawled_at = scrapy.Field(
-        output_processor=TakeFirst()
-    )
-    image_urls = scrapy.Field()
-    images = scrapy.Field()
-    url = scrapy.Field(
-        output_processor=TakeFirst()
-    )
     text = scrapy.Field(input_processor=MapCompose(remove_tags))
 
 
@@ -45,8 +49,10 @@ class BBCItem(NewsBaseItem):
 # define the fields for your item here like:
 # name = scrapy.Field()
 
+
 class ReutersItem(NewsBaseItem):
     tag = scrapy.Field(output_processor=TakeFirst())
+
 
 class CNNItem(NewsBaseItem):
     tag = scrapy.Field(output_processor=TakeFirst())

@@ -22,9 +22,11 @@ class Persist(StacklibPipeline):
     def __get_collection(self, source):
         return self.db[source + 's']
 
+#TODO how to filter items
     def process_item(self, item, spider):
-        if 'text' not in item.keys():
-            return item
+        
+        # if 'text' not in item.keys():
+        #     return item
         if 'source' not in item.keys():
             raise Exception('No source field in item')
         self.__get_collection(item['source']).insert_one(dict(item))

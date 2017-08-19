@@ -10,7 +10,7 @@
             "cwd":"${workspaceRoot}",
             "args": [
                 "crawl",
-                "medium"
+                "mbook"
             ],
             "console": "integratedTerminal",
             "env": null,
