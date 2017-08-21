@@ -13,6 +13,8 @@ class Book(BaseItem):
 
     review_urls = scrapy.Field()
 
+    hash_value = scrapy.Field(output_processor=TakeFirst())
+
     author = scrapy.Field(input_processor=MapCompose(remove_tags))
 
     summary = scrapy.Field(input_processor=MapCompose(remove_tags))
@@ -26,6 +28,7 @@ class BookReivew(BaseItem):
         remove_tags), output_processor=TakeFirst())
     text = scrapy.Field(input_processor=MapCompose(remove_tags))
     comments = scrapy.Field()
+    book_hash=scrapy.Field(output_processor=TakeFirst())
     url = scrapy.Field(output_processor=TakeFirst())
 
 

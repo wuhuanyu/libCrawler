@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
+import hashlib
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from stacklib.item.BookItem import Book as BI
@@ -47,7 +48,8 @@ class MillionBookSpider(CrawlSpider):
 
         bi.add_xpath('summary', './/div[@class="article"]//p/text()')
         bi.add_xpath('image_urls', './/div[@id="br-book-detail"]//img/@src')
-        title = main.xpath('.//div[@id="br-details"]/h1/a/text()').extract()
+        title = main.xpath('.//div[@id="br-details"]/h1/a/text()').extract_first().encode('utf-8')
+
         bi.add_value('title', title)
         bi.add_xpath('author', './/div[@class="br-details"]//h4/text()')
 
@@ -57,8 +59,13 @@ class MillionBookSpider(CrawlSpider):
 
         bi.add_value('review_urls', related_urls)
 
+        m=hashlib.md5()
+        m.update(title)
+        book_hash = m.hexdigest()
+        bi.add_value('hash_value',book_hash)
+
         for url in related_urls:
-            yield Re(url, callback=self.parse_book_reivew, meta={'book': title})
+            yield Re(url, callback=self.parse_book_reivew, meta={'book': title,'book_hash':book_hash})
 
         yield bi.load_item()
 
@@ -66,6 +73,7 @@ class MillionBookSpider(CrawlSpider):
 # http://www.themillions.com/2013/01/the-testament-of-mary-by-colm-toibin.html
     def parse_book_reivew(self, res):
         book = res.meta['book']
+        book_hash= res.meta['book_hash']
         crawled_at = int(round(time()) * 1000)
         source = 'mbookrev'
 
@@ -82,7 +90,8 @@ class MillionBookSpider(CrawlSpider):
         bi.add_css('text', '.article-content>p::text')
 
         bi.add_value('book', book)
-        bi.add_value('url',res.url)
+        bi.add_value('url', res.url)
+        bi.add_value('book_hash',book_hash)
 
         comments = []
 
