@@ -23,7 +23,7 @@ class BbcSpider(CrawlSpider):
         'world': 'politics',
         'world/asia': 'politics',
         'world/africa': 'politics',
-        'world/asia/china': 'politics',
+        'world/asia/china': 'china',
         'business': 'business',
         'technology': 'tech',
         'science_and_environment': 'tech',
