@@ -20,14 +20,14 @@ class BbcSpider(CrawlSpider):
     source = 'bbc'
 
     url_tags = {
+        'world/asia/china': 'china',
         'world': 'politics',
         'world/asia': 'politics',
         'world/africa': 'politics',
-        'world/asia/china': 'china',
         'business': 'business',
         'technology': 'tech',
         'science_and_environment': 'tech',
-        'entertainment_and_arts': 'entertainment',
+        'entertainment_and_arts': 'life',
         'health': 'health',
         'special_reports': 'special',
     }
@@ -60,11 +60,16 @@ class BbcSpider(CrawlSpider):
         b.add_xpath(
             'timestamp', './/li[@class="mini-info-list__item"]/div[@data-seconds]/@data-seconds')
 
-        b.add_xpath(
-            'image_urls', './/span/img[@class="js-image-replace"]/@src')
+        img_urls = story_sel.xpath(
+            './/span/img[@class="js-image-replace"]/@src').extract();
+        if len(img_urls)==0:
+            img_urls=story_sel.xpath('.//figure/div[@class="player-with-placeholder"]/img/@src').extract_first();
+        # b.add_xpath(
+        #     'image_urls', './/span/img[@class="js-image-replace"]/@src')
+        b.add_value('image_urls',img_urls)
 
         b.add_xpath(
-            'summary', './/p[@class="storybody__introduction"]/text()')
+            'summary', './/p[@class="story-body__introduction"]/text()')
 
         b.add_xpath('text', './/div[@property="articleBody"]/p/text()')
 

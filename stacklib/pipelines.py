@@ -22,12 +22,33 @@ class Persist(StacklibPipeline):
     def __get_collection(self, source):
         return self.db[source + 's']
 
-#TODO how to filter items
     def process_item(self, item, spider):
-        
-        # if 'text' not in item.keys():
-        #     return item
+
         if 'source' not in item.keys():
             raise Exception('No source field in item')
+        if item['source'] in ['bbc', 'cnn', 'reuters']:
+            return self.process_news(item, spider)
+
+        if item['source']=='medium':
+            item['summary']=item['text'][1]
+        
+
         self.__get_collection(item['source']).insert_one(dict(item))
+        return item
+
+    def process_news(self, item, spider):
+        newItem = self.checkNewsItem(item, spider)
+        self.__get_collection(item['source']).insert_one(dict(newItem))
+        return item
+
+    def checkNewsItem(self, item, spider):
+        if 'text' not in item.keys():
+            return None
+
+        if 'title' not in item.keys():
+            return None
+        if 'tag' not in item.keys():
+            raise Exception('No tag check code')
+        if 'summary' not in item.keys():
+            item['summary'] = item['text'][0]
         return item

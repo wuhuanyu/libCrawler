@@ -30,12 +30,12 @@ class CnnSpider(CrawlSpider):
     url_tags = {
         '/INTERNATIONAL': 'business',
         '/entertainment': 'entertainment',
-        '/asia': 'world',
+        '/asia': 'politics',
         '/china': 'china',
-        '/us': 'world',
+        '/us': 'politics',
         '/technology': 'tech',
         '/sport': 'sport',
-        '/travel': 'travel',
+        '/travel': 'life',
         '/health': 'health',
     }
 
