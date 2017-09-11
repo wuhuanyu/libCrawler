@@ -29,7 +29,7 @@ class BbcSpider(CrawlSpider):
         'science_and_environment': 'tech',
         'entertainment_and_arts': 'entertainment',
         'health': 'health',
-        'special_reports': 'special',
+        # 'special_reports': 'special',
     }
 
     def start_requests(self):

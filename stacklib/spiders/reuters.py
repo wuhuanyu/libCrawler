@@ -27,6 +27,7 @@ class ReutersSpider(CrawlSpider):
 
     url_tags = {
         '/places/china': 'china',
+        '/news/entertainment/arts': 'art',
         '/finance': 'business',
         '/politics': 'politics',
         '/news/technology': 'tech',
@@ -34,7 +35,6 @@ class ReutersSpider(CrawlSpider):
         '/news/us': 'politics',
         '/news/lifestyle': 'life',
         '/news/entertainment': 'entertainment',
-        '/news/entertainment/arts': 'art',
         '/news/sports': 'sport',
         '/news/science': 'tech',
     }
