@@ -28,10 +28,10 @@ class CnnSpider(CrawlSpider):
     base_url = start_urls[0]
 
     url_tags = {
+        '/china': 'china',
         '/INTERNATIONAL': 'business',
         '/entertainment': 'entertainment',
         '/asia': 'politics',
-        '/china': 'china',
         '/us': 'politics',
         '/technology': 'tech',
         '/sport': 'sport',

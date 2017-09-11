@@ -22,12 +22,12 @@ class BbcSpider(CrawlSpider):
     url_tags = {
         'world/asia/china': 'china',
         'world': 'politics',
-        'world/asia': 'politics',
+        'world/asia': 'asia',
         'world/africa': 'politics',
         'business': 'business',
         'technology': 'tech',
         'science_and_environment': 'tech',
-        'entertainment_and_arts': 'life',
+        'entertainment_and_arts': 'entertainment',
         'health': 'health',
         'special_reports': 'special',
     }

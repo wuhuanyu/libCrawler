@@ -26,18 +26,17 @@ class ReutersSpider(CrawlSpider):
     base_url = 'http://www.reuters.com'
 
     url_tags = {
+        '/places/china': 'china',
         '/finance': 'business',
         '/politics': 'politics',
         '/news/technology': 'tech',
         '/commentary': 'commentary',
-        '/places/china': 'china',
         '/news/us': 'politics',
         '/news/lifestyle': 'life',
         '/news/entertainment': 'entertainment',
         '/news/entertainment/arts': 'art',
         '/news/sports': 'sport',
         '/news/science': 'tech',
-        '/commentary': 'commentary'
     }
 
     def start_requests(self):
